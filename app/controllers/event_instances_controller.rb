@@ -43,10 +43,8 @@ class EventInstancesController < ApplicationController
 
   def send_messages_to_social_media event, event_params, hangout_url_changed
     begin
-      SlackService.post_hangout_notification(event) if updating_hangout_url?(event, hangout_url_changed)
-      SlackService.post_yt_link(event) if updating_valid_yt_url?(event, event_params)
-      TwitterService.tweet_hangout_notification(event) if (hangout_started?(event) && hangout_url_changed)
-      TwitterService.tweet_yt_link(event)
+      HangoutNotificationService.with event if updating_hangout_url? event, hangout_url_changed
+      YoutubeNotificationService.with event if updating_valid_yt_url? event, event_params
     rescue => e
       Rails.logger.error "Error sending hangout notifications:"
       Rails.logger.error e.message
